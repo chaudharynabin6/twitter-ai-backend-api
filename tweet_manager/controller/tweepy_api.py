@@ -51,7 +51,7 @@ auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 
-class Tweet:
+class TweetAPI:
     '''
     Tweet class is responsible for only handling the tweets of the given user_id
     The whole process is automatic just pass the user_id then it will get all necessary tweets
@@ -137,46 +137,40 @@ class Tweet:
             tweets ( dict) : dict containing all tweets and some meta data            
         '''
         
-        try: 
-            if kwargs:
-                # get paginated tweets
-                tweets=  self.client.get_users_tweets(id=twitter_id, **kwargs)
-                
-            
-            # get month ago tweets
-            else:
-                tweets = self.client.get_users_tweets(id=twitter_id,start_time=get_last_month(),**kwargs)
-            data = tweets.get('data',None)
-            meta = tweets.get('meta',None)
-            if  data is None and meta is None : 
-                raise Exception({
-                    'error': 'TWITTER_USER_NOT_FOUND',
-                    'detail': 'please check twitter_id'
-                })
-            return tweets
         
-        except ConnectionError as e:
+        if kwargs:
+            # get paginated tweets
+            tweets=  self.client.get_users_tweets(id=twitter_id, **kwargs)
+            
+        
+        # get month ago tweets
+        else:
+            tweets = self.client.get_users_tweets(id=twitter_id,start_time=get_last_month(),**kwargs)
+        data = tweets.get('data',None)
+        meta = tweets.get('meta',None)
+        if  data is None and meta is None : 
             raise Exception({
-                "err": "CONNECTION_ERROR",
-                'detail':e
+                'err': 'TWITTER_USER_NOT_FOUND',
+                'detail': 'please check twitter_id'
             })
-
+        return tweets
 
     
 
 
 def main():
     #NOTE: algo how to fetch using pagination token to fetch earlier
-    tweet = Tweet()
+    tweet = TweetAPI()
     # tweets = tweet.get_tweets(44196397,until_id = 1468938104446894092)
-    # tweets = tweet.get_tweets(44196397,until_id = 1468840273849589762)
+    tweets = tweet.get_tweets(44196397,until_id = 1468840273849589762)
 
     # tweets = tweet.get_tweets(44196397,since_id = )
     # tweets = tweet.get_tweets( 44196397,pagination_token='7140dibdnow9c7btw3z3b2647ln50kjowud35zhaku2i8')
     # user = tweet.get_user_detail('elonmusk')
-    tweets = tweet.get_tweets('1')
+    # tweets = tweet.get_tweets('1')
     # user = tweet.get_user_detail('xyxflkjdlfj')
     # pprint.pprint(user)
+    pprint.pprint(tweets)
 
 
 # oldest_id = 1468684576407101440

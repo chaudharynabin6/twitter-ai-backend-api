@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 
+from UserManager import views as UserManagerView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet-manager/',include('tweet_manager.urls')),
+    path('search/',UserManagerView.TwitterUserManager)
 ]

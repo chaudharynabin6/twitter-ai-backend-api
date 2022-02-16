@@ -7,5 +7,7 @@ class TweetManagerConfig(AppConfig):
 
     def ready(self) -> None:
         # from .controller.main import main
+        from .controller.fetch_tweets import fetch_tweets_and_save_to_db
+        # fetch_tweets_and_save_to_db('44196397')
         # main()
         return super().ready()

@@ -26,5 +26,13 @@ class TwittterUser(models.Model):
 class Tweet(models.Model):
     tweet_id = models.PositiveBigIntegerField()
     text = models.CharField(max_length=280)
-    twitter_user = models.ForeignKey(TwittterUser,on_delete=models.CASCADE,related_name='twitter_user')
+    twitter_user = models.ForeignKey(TwittterUser,on_delete=models.CASCADE,related_name='twitter_user_for_tweet')
 
+
+class TwitterUserMetaData(models.Model):
+    newest_id = models.PositiveBigIntegerField(default=0)
+    oldest_id = models.PositiveBigIntegerField(default=0)
+    result_count = models.IntegerField(default=0)
+    next_token = models.CharField(max_length=100,default='NO_TOKEN')
+    previous_token = models.CharField(max_length=100,default='NO_TOKEN')
+    twitter_user = models.ForeignKey(TwittterUser,on_delete=models.CASCADE,related_name='twitter_user_for_meta_data')
