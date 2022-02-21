@@ -1,7 +1,10 @@
+import imp
 from django.db import models
 from rest_framework import serializers
-from .models import Tweet,TwittterUser,TwitterUserMetaData
+# local imports
+from .models import Tweet,TwitterUserMetaData
 
+from UserManager.models import TwitterUser
 class TweetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweet
@@ -10,7 +13,7 @@ class TweetSerializer(serializers.ModelSerializer):
 
 class TwitterUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = TwittterUser
+        model = TwitterUser
         fields = '__all__'
 
 

@@ -1,20 +1,25 @@
+from time import sleep
 from typing import Dict, List
 from django.core.exceptions import ObjectDoesNotExist
-from .tweepy_api import TweetAPI
 from requests.exceptions import ConnectionError
 import pprint
 
-
+# local package
+from .tweepy_api import TweetAPI
 from tweet_manager.serializers import TweetSerializer,TwitterUserMetaDataSerializer
-from tweet_manager.models import TwitterUserMetaData,Tweet,TwittterUser
+from tweet_manager.models import TwitterUserMetaData,Tweet
+
+from UserManager.models import TwitterUser
 
 def save_tweets(id,data):
     # pprint.pprint(data)
     meta : Dict = data.get('meta')
+    print("-------------------------------meta start---------------------")
     pprint.pprint(meta)
+    print("-------------------------------meta end--------------------")
     result_count : int = meta.get('result_count',None)
-    if result_count != 0 or result_count != None:
-        twitter_user = TwittterUser.objects.get(twitter_id = id)
+    if result_count != 0 and result_count != None:
+        twitter_user = TwitterUser.objects.get(user_id = id)
         twitter_user_meta_data,created = TwitterUserMetaData.objects.get_or_create(twitter_user = twitter_user)
         twitter_user_meta_data_serializer = TwitterUserMetaDataSerializer(instance=twitter_user_meta_data,data=meta,partial=True)
         if twitter_user_meta_data_serializer.is_valid(raise_exception=True):
@@ -57,33 +62,35 @@ def fetch_tweets_and_save_to_db(id,**kwargs):
     '''
     tweet_api = TweetAPI()
     try:
-        twitter_user = TwittterUser.objects.get(twitter_id = id)
+        twitter_user = TwitterUser.objects.get(user_id = id)
         twitter_user_meta_data=TwitterUserMetaData.objects.get(twitter_user = twitter_user)
     except ObjectDoesNotExist as e:
-        data =  tweet_api.get_tweets(id)
         while True:
-
             try: 
+                data =  tweet_api.get_tweets(id)
                 save_tweets(id,data)
                 break
             except ConnectionError as e:
-               
-                    continue
+                sleep(5)
+                print("connection error")
+                continue
                     
                 
         
 
 
     else:
-        if twitter_user_meta_data.next_token == 'NO_TOKEN':
-            data =  tweet_api.get_tweets(id)
-        else: 
-            data = tweet_api.get_tweets(id,pagination_token=twitter_user_meta_data.next_token)
         while True:
-            try: 
+            try:
+                if twitter_user_meta_data.next_token == 'NO_TOKEN':
+                    data =  tweet_api.get_tweets(id)
+                else: 
+                    data = tweet_api.get_tweets(id,pagination_token=twitter_user_meta_data.next_token)
                 save_tweets(id,data)
                 break
             except ConnectionError as e:
+                sleep(5)
+                print("connection error")
                 continue
        
         
