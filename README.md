@@ -2,5 +2,5 @@
 # pipdeptree
 
 ``` bash
-python -m pipdeptree --exclude pip,pipdeptree,setuptools,wheel > locked-requirements.txt
+python -m pipdeptree -f --exclude pip,pipdeptree,setuptools,wheel > locked-requirements.txt
 ```
