@@ -20,5 +20,5 @@ from UserManager import views as UserManagerView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet-manager/',include('tweet_manager.urls')),
-    path('search/',UserManagerView.TwitterUserManager)
+    path('search/',include('UserManager.urls')),
 ]
