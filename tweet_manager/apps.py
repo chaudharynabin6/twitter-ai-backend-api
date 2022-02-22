@@ -7,13 +7,14 @@ class TweetManagerConfig(AppConfig):
 
     def ready(self) -> None:
         
-       
         from .tasks import handle_fetch_twitter_user_tweets_task
         from .tasks import analyse_celebrity_tweet_task
         from .tasks import generate_total_summary
+        from .tasks import generate_time_series_summary
         # handle_fetch_twitter_user_tweets_task.delay()
         # analyse_celebrity_tweet_task.delay()
-        generate_total_summary.delay()
+        # generate_total_summary.delay()
+        generate_time_series_summary.delay()
 
        
 

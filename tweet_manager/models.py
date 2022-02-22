@@ -47,3 +47,11 @@ class TotalSummary(models.Model):
     positive = models.PositiveBigIntegerField(default=0)
     negative = models.PositiveBigIntegerField(default=0)
     total = models.PositiveBigIntegerField(default=0)
+
+
+class TimeSeriesSummary(models.Model):
+    twitter_user = models.ForeignKey(TwitterUser,on_delete=models.CASCADE,related_name='twitter_user_for_time_series_summary')
+    position = models.SmallIntegerField(default=0)
+    positive = models.PositiveBigIntegerField(default=0)
+    negative = models.PositiveBigIntegerField(default=0)
+    total = models.PositiveBigIntegerField(default=0)

@@ -88,7 +88,65 @@ def generate_total_summary(self):
 # TODO: create the task for that divides the analysed tweets 
 # into 10 groups that is arranged according to tweet_id
 # for each celebrity twitter user
+@shared_task(bind=True)
+def generate_time_series_summary(self):
+    # local import
+    from UserManager.models import TwitterUser
+    from .models import TimeSeriesSummary,Tweet
+    # getting all the analysing and non protected users 
+    while True:
+        analysing_user = TwitterUser.objects.filter(isAnalysing=True,protected=False)
+
+        # for each analysing user
+        for user in analysing_user:
+            # gettting all the analysed tweets of the given user according to ascending order o tweet_id
+
+            all_analysed_tweets = Tweet.objects.filter(is_analysed=True,twitter_user = user).order_by('tweet_id')
+            
+            # creating TimeSeriesSummary only if analysed_tweets length is greater than 10
+            n_all_analysed_tweets = len(all_analysed_tweets)
+            if n_all_analysed_tweets > 10:
+                # calculating the partition indices
+                partition = [0]
+                for i in range(1,11):
+                    pos = round(n_all_analysed_tweets/10 * i)
+
+                    partition.append(int(pos))
+                
+                # partitioning the tweets 
+                # [[partion0],[partion1],....,[partition9]]
+                # print(type(all_analysed_tweets)) <class QuerySet>
+                partitioned_tweets = []
+                for i in range(10):
+                    single_partition = all_analysed_tweets[partition[i]:partition[i+1]+1]
+                    # print(type(single_partition))  <class 'list'>
+                    partitioned_tweets.append(single_partition)
 
 
+                for position,tweets in enumerate(partitioned_tweets):
+
+                    # calculating first number of  positive and negative tweets 
+                    n_total_tweets = len(tweets)
+                    # n_positive = len(tweets.filter(label="POSITIVE")) # ERROR:
+
+                    # counting positive tweets 
+                    n_positive = 0
+                    for tweet in tweets:
+                        if tweet.label == "POSITIVE":
+                            n_positive += 1
+                    
+                    n_negative = n_total_tweets - n_positive
+
+                    # print(n_positive,n_negative,n_total_tweets)
+
+                    # getting  or creating TimeSeriesSummary 
+                    current_pos_current_user_time_series_summary,_ = TimeSeriesSummary.objects.get_or_create(twitter_user = user,position = position)
+                    
+                    current_pos_current_user_time_series_summary.positive = n_positive
+                    current_pos_current_user_time_series_summary.negative = n_negative
+                    current_pos_current_user_time_series_summary.total = n_total_tweets
+                    current_pos_current_user_time_series_summary.save()
+                print(f"generate_time_series_summary---{user}")
+        sleep(10)
 
 # TODO: send signal of the that users only that have completed upto grouping 
