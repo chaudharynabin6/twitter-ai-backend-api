@@ -6,11 +6,14 @@ class TweetManagerConfig(AppConfig):
     name = 'tweet_manager'
 
     def ready(self) -> None:
-        # from .controller.main import main
-        from .controller.fetch_tweets import fetch_tweets_and_save_to_db
-        from .tasks import test_funcion
-        test_funcion.delay()
-        # fetch_tweets_and_save_to_db('180505807')
+        
+       
+        from .tasks import handle_fetch_twitter_user_tweets_task
+        from .tasks import analyse_celebrity_tweet_task
+        handle_fetch_twitter_user_tweets_task.delay()
+        analyse_celebrity_tweet_task.delay()
 
-        # main()
+       
+
+    
         return super().ready()
