@@ -2,7 +2,7 @@ from typing import Optional
 from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 
-from .models import Tweet,TwitterUserMetaData
+from .models import Tweet,TwitterUserMetaData,TotalSummary
 # Register your models here.
 @admin.register(Tweet)
 class TweetAdmin(admin.ModelAdmin):
@@ -15,4 +15,11 @@ class TweetAdmin(admin.ModelAdmin):
 class TwitterUserAdmin(admin.ModelAdmin):
     def __init__(self, model, admin_site: Optional[AdminSite]) -> None:
         self.list_display = [str(field.name) for field in TwitterUserMetaData._meta.fields]
+        super().__init__(model, admin_site)
+
+
+@admin.register(TotalSummary)
+class TwitterUserAdmin(admin.ModelAdmin):
+    def __init__(self, model, admin_site: Optional[AdminSite]) -> None:
+        self.list_display = [str(field.name) for field in TotalSummary._meta.fields]
         super().__init__(model, admin_site)

@@ -41,3 +41,9 @@ class TwitterUserMetaData(models.Model):
     next_token = models.CharField(max_length=100,default='NO_TOKEN')
     previous_token = models.CharField(max_length=100,default='NO_TOKEN')
     twitter_user = models.ForeignKey(TwitterUser,on_delete=models.CASCADE,related_name='twitter_user_for_meta_data')
+
+class TotalSummary(models.Model):
+    twitter_user = models.ForeignKey(TwitterUser,on_delete=models.CASCADE,related_name='twitter_user_for_total_summary')
+    positive = models.PositiveBigIntegerField(default=0)
+    negative = models.PositiveBigIntegerField(default=0)
+    total = models.PositiveBigIntegerField(default=0)
