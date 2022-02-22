@@ -29,6 +29,9 @@ class Tweet(models.Model):
     tweet_id = models.PositiveBigIntegerField()
     text = models.CharField(max_length=280)
     twitter_user = models.ForeignKey(TwitterUser,on_delete=models.CASCADE,related_name='twitter_user_for_tweet')
+    is_analysed = models.BooleanField(default=False)
+    label = models.CharField(max_length=100,default="NOT_CLASSIFIED")
+    score = models.FloatField(default=0)
 
 
 class TwitterUserMetaData(models.Model):
