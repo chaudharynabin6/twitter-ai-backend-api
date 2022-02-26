@@ -7,8 +7,8 @@ from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
 
 #local import
-from .models import Tweet
-from .serializers import TweetSerializer
+from .models import Tweet,TotalSummary,TimeSeriesSummary
+from .serializers import TweetSerializer,TotalSummarySerializer,TimeSeriesSummarySerializer
 from UserManager.models import TwitterUser
 
 # code starts
@@ -20,7 +20,7 @@ class TweetReadOnlyViewSet(viewsets.ModelViewSet):
         super().__init__(**kwargs)
 
 
-@api_view(['GET','PATCH'])
+@api_view(['GET'])
 def analysed_tweet(request,user=None):
 
     if request.method == "GET":
@@ -46,6 +46,55 @@ def analysed_tweet(request,user=None):
             
             
             
+@api_view(['GET'])
+def total_summary(request,user = None):
 
+    if request.method == 'GET':
+        
+        if user != None:
+            try:
+                twitter_user = TwitterUser.objects.get(user_id=user,isAnalysing=True)
+            
+            except TwitterUser.DoesNotExist : 
+                raise NotFound(detail={"analysing twitter user not found"})
+            
+            try:
+                total_summary = TotalSummary.objects.get(twitter_user=twitter_user)
+            except TotalSummary.DoesNotExist :
+                raise NotFound(detail={"still processing total_summary for current user"})
+            serialized_total_summary = TotalSummarySerializer(instance=total_summary)
+
+            return Response(data=serialized_total_summary.data,status=status.HTTP_200_OK)
+        
+        else:
+            raise NotFound(detail="please supply >>twitter user id<<< in params")
+
+            
+            
+@api_view(['GET'])
+def time_series_summary(request,user = None):
+
+    if request.method == 'GET':
+        
+        if user != None:
+            try:
+                twitter_user = TwitterUser.objects.get(user_id=user,isAnalysing=True)
+            
+            except TwitterUser.DoesNotExist : 
+                raise NotFound(detail={"analysing twitter user not found"})
+            
+            
+            time_series_summary = TimeSeriesSummary.objects.filter(twitter_user=twitter_user)
+            if not time_series_summary.exists():
+                raise NotFound(detail={"still processing time series summary for current user"})
+            serialized_time_series_summary = TimeSeriesSummarySerializer(instance=time_series_summary,many=True)
+
+            return Response(data=serialized_time_series_summary.data,status=status.HTTP_200_OK)
+        
+        else:
+            raise NotFound(detail="please supply >>twitter user id<<< in params")
+
+            
+     
             
 
