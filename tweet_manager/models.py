@@ -1,3 +1,5 @@
+from datetime import datetime
+import django
 from django.db import models
 
 # local imports
@@ -55,3 +57,4 @@ class TimeSeriesSummary(models.Model):
     positive = models.PositiveBigIntegerField(default=0)
     negative = models.PositiveBigIntegerField(default=0)
     total = models.PositiveBigIntegerField(default=0)
+    date = models.DateTimeField(default=datetime.now())

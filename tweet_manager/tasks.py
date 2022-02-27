@@ -3,7 +3,7 @@ from time import sleep
 from celery import shared_task
 
 # local import
-
+from .tweet_api import get_date
 
 
 @shared_task(bind=True)
@@ -85,7 +85,7 @@ def generate_total_summary(self):
 
 
 
-# TODO: create the task for that divides the analysed tweets 
+# done: create the task for that divides the analysed tweets 
 # into 10 groups that is arranged according to tweet_id
 # for each celebrity twitter user
 @shared_task(bind=True)
@@ -127,7 +127,8 @@ def generate_time_series_summary(self):
 
                     # calculating first number of  positive and negative tweets 
                     n_total_tweets = len(tweets)
-                    # n_positive = len(tweets.filter(label="POSITIVE")) # ERROR:
+                    # n_positive = len(tweets.filter(label="POSITIVE")) # ERROR: 
+                    # https://stackoverflow.com/questions/37192617/filtering-a-django-queryset-once-a-slice-has-been-taken?rq=1
 
                     # counting positive tweets 
                     n_positive = 0
@@ -140,11 +141,14 @@ def generate_time_series_summary(self):
                     # print(n_positive,n_negative,n_total_tweets)
 
                     # getting  or creating TimeSeriesSummary 
+                    last_tweet = tweets[-1]
+                    last_tweet_date=get_date(last_tweet.tweet_id)
                     current_pos_current_user_time_series_summary,_ = TimeSeriesSummary.objects.get_or_create(twitter_user = user,position = position)
                     
                     current_pos_current_user_time_series_summary.positive = n_positive
                     current_pos_current_user_time_series_summary.negative = n_negative
                     current_pos_current_user_time_series_summary.total = n_total_tweets
+                    current_pos_current_user_time_series_summary.date = last_tweet_date
                     current_pos_current_user_time_series_summary.save()
                 print(f"generate_time_series_summary---{user}")
         sleep(10)
