@@ -57,4 +57,4 @@ class TimeSeriesSummary(models.Model):
     positive = models.PositiveBigIntegerField(default=0)
     negative = models.PositiveBigIntegerField(default=0)
     total = models.PositiveBigIntegerField(default=0)
-    date = models.DateTimeField(default=datetime.now())
+    date = models.DateTimeField(default=django.utils.timezone.now)
