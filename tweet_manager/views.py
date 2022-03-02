@@ -60,11 +60,13 @@ def total_summary(request,user = None):
             
             try:
                 total_summary = TotalSummary.objects.get(twitter_user=twitter_user)
+                total_tweets_fetched = Tweet.objects.filter(twitter_user=twitter_user)
             except TotalSummary.DoesNotExist :
                 raise NotFound(detail={"still processing total_summary for current user"})
             serialized_total_summary = TotalSummarySerializer(instance=total_summary)
-
-            return Response(data=serialized_total_summary.data,status=status.HTTP_200_OK)
+            data = serialized_total_summary.data
+            data['total_fetched'] = len(total_tweets_fetched)
+            return Response(data=data,status=status.HTTP_200_OK)
         
         else:
             raise NotFound(detail="please supply >>twitter user id<<< in params")
@@ -84,7 +86,7 @@ def time_series_summary(request,user = None):
                 raise NotFound(detail={"analysing twitter user not found"})
             
             
-            time_series_summary = TimeSeriesSummary.objects.filter(twitter_user=twitter_user)
+            time_series_summary = TimeSeriesSummary.objects.filter(twitter_user=twitter_user).order_by("position")
             if not time_series_summary.exists():
                 raise NotFound(detail={"still processing time series summary for current user"})
             serialized_time_series_summary = TimeSeriesSummarySerializer(instance=time_series_summary,many=True)
