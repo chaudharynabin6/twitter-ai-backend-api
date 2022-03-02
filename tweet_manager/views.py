@@ -1,4 +1,5 @@
 from typing import Any
+from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -99,4 +100,38 @@ def time_series_summary(request,user = None):
             
      
             
+@api_view(['GET'])
+def all_user_summary(request):
 
+    if request.method == "GET":
+        analysing_twitter_users = TwitterUser.objects.filter(isAnalysing=True,protected=False)
+
+        data = []
+        for user in analysing_twitter_users:
+
+            all_analysed_tweets = Tweet.objects.filter(is_analysed=True,twitter_user = user)
+
+            positive_tweets = all_analysed_tweets.filter(label="POSITIVE")
+
+            n_all_analysed_tweets = len(all_analysed_tweets)
+
+            n_positive_tweets = len(positive_tweets)
+
+            n_negative_tweets = n_all_analysed_tweets - n_positive_tweets
+            # calcualatin percentage
+            if(n_all_analysed_tweets > 0):
+                n_negative_tweets = 100 * n_positive_tweets / n_all_analysed_tweets
+                n_negative_tweets = 100 * n_negative_tweets / n_all_analysed_tweets
+          
+                
+
+            
+            single_user_summary = {
+                'positive':n_positive_tweets,
+                'negative':n_negative_tweets,
+                'name':user.name
+            }
+
+            data.append(single_user_summary)
+        
+        return JsonResponse(data=data,status=status.HTTP_200_OK,safe=False)
