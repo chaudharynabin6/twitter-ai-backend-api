@@ -1,6 +1,7 @@
 # for converting the dict to queryString
 
 import json
+from time import sleep
 from urllib.parse import urlencode
 from django.http import JsonResponse
 
@@ -43,6 +44,12 @@ headers = get_headers_as_dict(headers=raw_headers)
 
 def search_and_add_twitter_users(request,users=""):
     if request.method == 'GET':
+        if users == "":
+            all_users = models.TwitterUser.objects.filter(isAnalysing=True)
+            serialized_users = serializers.TwitterUserSerializer(all_users,many=True)
+            data = serialized_users.data
+
+            return Response(data=data)
 
         query =  request.query_params
 
@@ -53,17 +60,23 @@ def search_and_add_twitter_users(request,users=""):
         url = url + users+ "&" + "user.fields=created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url,protected,url,username,verified,withheld";
 
         payload={}
+        i = 0
+        while True:
+            try:
+                
+                response = requests.request("GET", url, headers=headers, data=payload)
+                data = response.json()
+                return Response(data=data)
+            except requests.exceptions.ConnectionError : 
+                if(i==3):
+                    break
+                i = i +1
+                sleep(2)
+                continue
+                
+        return JsonResponse(data={"error":"Connection Error on Twitter API Please connect to internet"},status=status.HTTP_408_REQUEST_TIMEOUT)
 
-        response = requests.request("GET", url, headers=headers, data=payload)
 
-        data = response.json()
-
-        if users == "":
-            all_users = models.TwitterUser.objects.filter(isAnalysing=True)
-            serialized_users = serializers.TwitterUserSerializer(all_users,many=True)
-            data = serialized_users.data
-
-        return Response(data=data)
 
 
     # if request.method == 'POST':
