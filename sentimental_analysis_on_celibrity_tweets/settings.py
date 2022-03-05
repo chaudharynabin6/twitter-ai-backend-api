@@ -85,6 +85,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+                    # ...
+                    'timeout': 20, # https://docs.djangoproject.com/en/dev/ref/databases/#database-is-locked-errorsoption
+                    # ...
+                }
     }
 }
 
