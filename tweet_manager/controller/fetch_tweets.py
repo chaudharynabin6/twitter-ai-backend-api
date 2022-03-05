@@ -34,7 +34,9 @@ def save_tweets(id,data):
         # print(tweets)
         for item in tweets:
             print(item)
-            
+            if len(item['text']) > 280:
+                item['text'] = item['text'][:280]
+
             tweet,created = Tweet.objects.get_or_create(tweet_id = item.get('id'),twitter_user=twitter_user)
             tweet_serializer = TweetSerializer(instance=tweet,data={'text':item.get('text')},partial=True)
             
