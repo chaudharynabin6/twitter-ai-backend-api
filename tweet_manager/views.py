@@ -119,9 +119,9 @@ def all_user_summary(request):
 
             n_negative_tweets = n_all_analysed_tweets - n_positive_tweets
             # calcualatin percentage
-            if(n_all_analysed_tweets > 0):
-                n_negative_tweets = 100 * n_positive_tweets / n_all_analysed_tweets
-                n_negative_tweets = 100 * n_negative_tweets / n_all_analysed_tweets
+            # if(n_all_analysed_tweets > 0):
+            #     n_negative_tweets = 100 * n_positive_tweets / n_all_analysed_tweets
+            #     n_negative_tweets = 100 * n_negative_tweets / n_all_analysed_tweets
           
                 
 
