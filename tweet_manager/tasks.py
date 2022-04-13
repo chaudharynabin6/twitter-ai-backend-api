@@ -1,10 +1,11 @@
 import imp
 from time import sleep
 from celery import shared_task
+import django
 
 # local import
 from .tweet_api import get_date
-
+from .utils import clean_tweet
 
 @shared_task(bind=True)
 def handle_fetch_twitter_user_tweets_task(self):
@@ -28,18 +29,21 @@ def analyse_celebrity_tweet_task(self):
     from transformers import pipeline
     from .models import Tweet
     pipe = pipeline("text-classification")    
-    non_anlysed_tweets = Tweet.objects.filter(is_analysed=False)
-
-    for tweet in non_anlysed_tweets:
-        text = tweet.text
-        output = pipe(text)[0]
-        label = output.get("label")
-        score = output.get('score')
-        tweet.label = label
-        tweet.score = score
-        tweet.is_analysed = True
-        tweet.save()
-        print(f"{tweet.tweet_id} analysed")
+    while True:
+        non_anlysed_tweets = Tweet.objects.filter(is_analysed=False)
+        for tweet in non_anlysed_tweets:
+            text = tweet.text
+            text = clean_tweet(text)
+            output = pipe(text)[0]
+            label = output.get("label")
+            score = output.get('score')
+            tweet.label = label
+            tweet.score = score
+            tweet.is_analysed = True
+            tweet.save()
+            print(f"{tweet.tweet_id} analysed")
+        
+        sleep(20)
 
 
 # done: create the task for calculating the total of
