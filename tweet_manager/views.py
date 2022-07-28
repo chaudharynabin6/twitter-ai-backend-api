@@ -23,7 +23,7 @@ class TweetReadOnlyViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def analysed_tweet(request,user=None):
-
+    "analyse the tweet of given user"
     if request.method == "GET":
 
         if user != None:
