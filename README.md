@@ -22,13 +22,13 @@ open terminal in home directory and then open 4 tabs and use these commands
 
 tab 1
 ```
-cd projects/final_project_api_dev/
+cd [project_path]
 redis-server
 ```
 
 tab2
 ```
-cd projects/final_project_api_dev/
+cd [project_path]
 source venv/bin/activate
 python manage.py runserver
 
@@ -36,7 +36,7 @@ python manage.py runserver
 
 tab3
 ```
-cd projects/final_project_api_dev/
+cd [project_path]
 source venv/bin/activate
 celery -A sentimental_analysis_on_celibrity_tweets.celery purge -f
 celery -A sentimental_analysis_on_celibrity_tweets.celery worker -l info
@@ -44,8 +44,11 @@ celery -A sentimental_analysis_on_celibrity_tweets.celery worker -l info
 ```
 
 tab4
+
+frontend repo
+[frontend](https://github.com/chaudharynabin6/twittterai-frontend)
 ```
-cd projects/twittterai-frontend/
+cd [front_end_project_path]
 npm start
 ```
 
